@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TechFix — Device Repair Booking</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #020b14;
+      --panel: #050f1c;
+      --border: #0d3a5e;
+      --accent: #00d4ff;
+      --accent2: #00ff9d;
+      --accent3: #ff4d6d;
+      --text: #c8e8ff;
+      --dim: #3a6a8a;
+      --glow: 0 0 20px rgba(0, 212, 255, 0.4);
+      --glow2: 0 0 20px rgba(0, 255, 157, 0.3);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* GRID BACKGROUND */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,255,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ANIMATED SCAN LINE */
+    body::after {
+      content: '';
+      position: fixed;
+      left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      animation: scan 6s linear infinite;
+      opacity: 0.3;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    @keyframes scan {
+      0%   { top: -2px; }
+      100% { top: 100vh; }
+    }
+
+    /* HEADER */
+    header {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 50px 20px 30px;
+    }
+
+    .logo-tag {
+      display: inline-block;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 6px;
+      color: var(--accent);
+      text-transform: uppercase;
+      border: 1px solid var(--accent);
+      padding: 4px 16px;
+      margin-bottom: 18px;
+      animation: fadein 1s ease;
+    }
+
+    h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2rem, 6vw, 4rem);
+      font-weight: 900;
+      letter-spacing: 4px;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #fff 30%, var(--accent) 70%, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadein 1s ease 0.2s both;
+    }
+
+    .subtitle {
+      font-size: 1.05rem;
+      letter-spacing: 3px;
+      color: var(--dim);
+      margin-top: 10px;
+      text-transform: uppercase;
+      animation: fadein 1s ease 0.4s both;
+    }
+
+    /* DECORATIVE LINE */
+    .deco-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 24px auto;
+      max-width: 400px;
+      animation: fadein 1s ease 0.5s both;
+    }
+    .deco-line span {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent));
+    }
+    .deco-line span:last-child {
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .deco-line i {
+      width: 8px; height: 8px;
+      background: var(--accent);
+      transform: rotate(45deg);
+      box-shadow: var(--glow);
+    }
+
+    /* MAIN CONTAINER */
+    main {
+      position: relative;
+      z-index: 10;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    /* FORM PANEL */
+    .form-panel {
+      background: rgba(5,15,28,0.9);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 40px 44px;
+      position: relative;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 60px rgba(0,60,100,0.5), inset 0 1px 0 rgba(0,212,255,0.1);
+      animation: slidein 0.8s ease 0.6s both;
+    }
+
+    /* Corner decorations */
+    .form-panel::before,
+    .form-panel::after {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      border-color: var(--accent);
+      border-style: solid;
+    }
+    .form-panel::before {
+      top: -1px; left: -1px;
+      border-width: 2px 0 0 2px;
+    }
+    .form-panel::after {
+      bottom: -1px; right: -1px;
+      border-width: 0 2px 2px 0;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+    .step-badge {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      color: var(--bg);
+      background: var(--accent);
+      padding: 4px 10px;
+      font-weight: 700;
+    }
+    .panel-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 4px;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    /* STEPS INDICATOR */
+    .steps-nav {
+      display: flex;
+      gap: 0;
+      margin-bottom: 36px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      border-radius: 3px;
+    }
+    .step-btn {
+      flex: 1;
+      padding: 10px 6px;
+      background: transparent;
+      border: none;
+      border-right: 1px solid var(--border);
+      cursor: pointer;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 2px;
+      color: var(--dim);
+      text-transform: uppercase;
+      transition: all 0.3s;
+    }
+    .step-btn:last-child { border-right: none; }
+    .step-btn.active {
+      background: rgba(0,212,255,0.08);
+      color: var(--accent);
+      box-shadow: inset 0 -2px 0 var(--accent);
+    }
+
+    /* FORM FIELDS */
+    .field-group {
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 3px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    label span {
+      color: var(--accent3);
+      margin-left: 2px;
+    }
+
+    /* DEVICE CARDS */
+    .device-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .device-card {
+      position: relative;
+      cursor: pointer;
+    }
+    .device-card input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0; height: 0;
+    }
+    .device-card-inner {
+      border: 1px solid var(--border);
+      padding: 16px 10px;
+      text-align: center;
+      transition: all 0.25s;
+      background: rgba(0,30,60,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .device-card-inner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,212,255,0.05), transparent);
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .device-card input:checked + .device-card-inner {
+      border-color: var(--accent);
+      background: rgba(0,212,255,0.08);
+      box-shadow: var(--glow), inset 0 0 20px rgba(0,212,255,0.05);
+    }
+    .device-card input:checked + .device-card-inner::before { opacity: 1; }
+    .device-card-inner:hover {
+      border-color: var(--dim);
+      transform: translateY(-2px);
+    }
+
+    .device-icon {
+      font-size: 2rem;
+      display: block;
+      margin-bottom: 8px;
+      filter: grayscale(0.3);
+    }
+    .device-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 2px;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+    .device-card input:checked + .device-card-inner .device-name {
+      color: var(--accent);
+    }
+
+    /* BRAND SELECT STYLED */
+    .brand-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .brand-grid::-webkit-scrollbar { width: 4px; }
+    .brand-grid::-webkit-scrollbar-track { background: var(--panel); }
+    .brand-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .brand-card {
+      position: relative;
+      cursor: pointer;
+    }
+    .brand-card input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0; height: 0;
+    }
+    .brand-card-inner {
+      border: 1px solid var(--border);
+      padding: 10px 8px;
+      text-align: center;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: var(--dim);
+      transition: all 0.2s;
+      background: rgba(0,20,40,0.4);
+    }
+    .brand-card input:checked + .brand-card-inner {
+      border-color: var(--accent2);
+      color: var(--accent2);
+      background: rgba(0,255,157,0.06);
+      box-shadow: var(--glow2);
+    }
+    .brand-card-inner:hover { border-color: var(--dim); color: var(--text); }
+
+    /* TEXT INPUTS */
+    .text-input {
+      width: 100%;
+      background: rgba(0,20,40,0.5);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      padding: 12px 16px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      letter-spacing: 1px;
+    }
+    .text-input:focus {
+      border-color: var(--accent);
+      box-shadow: var(--glow);
+    }
+    .text-input::placeholder { color: var(--dim); }
+
+    textarea.text-input {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* PRIORITY SELECT */
+    .priority-row {
+      display: flex;
+      gap: 10px;
+    }
+    .priority-opt {
+      position: relative;
+      flex: 1;
+      cursor: pointer;
+    }
+    .priority-opt input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+    }
+    .priority-inner {
+      border: 1px solid var(--border);
+      padding: 10px;
+      text-align: center;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 2px;
+      color: var(--dim);
+      transition: all 0.2s;
+    }
+    .priority-opt input:checked + .priority-inner.standard {
+      border-color: var(--accent2);
+      color: var(--accent2);
+      background: rgba(0,255,157,0.06);
+    }
+    .priority-opt input:checked + .priority-inner.express {
+      border-color: #ffd700;
+      color: #ffd700;
+      background: rgba(255,215,0,0.06);
+      box-shadow: 0 0 14px rgba(255,215,0,0.3);
+    }
+    .priority-opt input:checked + .priority-inner.urgent {
+      border-color: var(--accent3);
+      color: var(--accent3);
+      background: rgba(255,77,109,0.06);
+      box-shadow: 0 0 14px rgba(255,77,109,0.3);
+    }
+
+    /* TWO COLUMN */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    @media (max-width: 540px) {
+      .two-col { grid-template-columns: 1fr; }
+      .form-panel { padding: 28px 20px; }
+      .device-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* DIVIDER */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 32px 0;
+    }
+    .section-divider span { flex: 1; height: 1px; background: var(--border); }
+    .section-divider em {
+      font-style: normal;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 3px;
+      color: var(--dim);
+    }
+
+    /* SUBMIT BUTTON */
+    .submit-btn {
+      width: 100%;
+      padding: 18px;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-family: 'Orbitron', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+      margin-top: 36px;
+    }
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--accent);
+      transform: translateX(-101%);
+      transition: transform 0.3s ease;
+      z-index: -1;
+    }
+    .submit-btn:hover {
+      color: var(--bg);
+      box-shadow: var(--glow);
+    }
+    .submit-btn:hover::before {
+      transform: translateX(0);
+    }
+    .submit-btn:active { transform: scale(0.99); }
+
+    /* SUCCESS OVERLAY */
+    .success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(2,11,20,0.95);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      gap: 20px;
+      animation: fadein 0.4s ease;
+    }
+    .success-overlay.show { display: flex; }
+
+    .success-icon {
+      font-size: 4rem;
+      animation: pulse 2s ease infinite;
+    }
+    .success-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent2);
+      letter-spacing: 4px;
+      text-shadow: var(--glow2);
+    }
+    .success-code {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 4px;
+      color: var(--dim);
+      border: 1px solid var(--border);
+      padding: 10px 24px;
+    }
+    .success-sub {
+      color: var(--dim);
+      font-size: 1rem;
+      letter-spacing: 2px;
+      max-width: 340px;
+    }
+    .new-booking-btn {
+      margin-top: 10px;
+      background: transparent;
+      border: 1px solid var(--accent2);
+      color: var(--accent2);
+      font-family: 'Orbitron', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 3px;
+      padding: 12px 28px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .new-booking-btn:hover {
+      background: var(--accent2);
+      color: var(--bg);
+    }
+
+    /* STATUS TICKER */
+    .status-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 20;
+      background: rgba(2,11,20,0.9);
+      border-top: 1px solid var(--border);
+      padding: 7px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 2px;
+      color: var(--dim);
+      overflow: hidden;
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      background: var(--accent2);
+      border-radius: 50%;
+      animation: blink 1.4s ease infinite;
+      flex-shrink: 0;
+    }
+    .ticker-text {
+      white-space: nowrap;
+      animation: ticker 22s linear infinite;
+    }
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* FLOATING PARTICLES */
+    .particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: var(--accent);
+      border-radius: 50%;
+      opacity: 0;
+      animation: float var(--dur) ease-in-out infinite var(--delay);
+    }
+    @keyframes float {
+      0%   { opacity: 0; transform: translateY(0) scale(1); }
+      20%  { opacity: 0.6; }
+      80%  { opacity: 0.3; }
+      100% { opacity: 0; transform: translateY(-80vh) scale(0.3); }
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slidein {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    /* BRAND FILTER HINT */
+    .brand-hint {
+      font-size: 0.8rem;
+      color: var(--dim);
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    /* REQUIRED INDICATOR */
+    .req-note {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.75rem;
+      color: var(--dim);
+      letter-spacing: 1px;
+      margin-bottom: 28px;
+    }
+    .req-note span { color: var(--accent3); }
+  </style>
+</head>
+<body>
+
+<!-- Floating particles -->
+<div class="particles" id="particles"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-tag">TechFix Systems v2.0</div>
+  <h1>DEVICE REPAIR<br>BOOKING</h1>
+  <p class="subtitle">Advanced Diagnostics · Precision Repair</p>
+  <div class="deco-line">
+    <span></span><i></i><span></span>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main>
+  <form id="bookingForm" onsubmit="submitForm(event)">
+    <div class="form-panel">
+
+      <!-- Steps nav -->
+      <div class="steps-nav">
+        <div class="step-btn active">01 · Device</div>
+        <div class="step-btn active">02 · Brand</div>
+        <div class="step-btn active">03 · Details</div>
+        <div class="step-btn active">04 · Schedule</div>
+      </div>
+
+      <p class="req-note">Fields marked <span>*</span> are required</p>
+
+      <!-- STEP 1: DEVICE TYPE -->
+      <div class="field-group">
+        <label>Select Device Type <span>*</span></label>
+        <div class="device-grid">
+          <label class="device-card">
+            <input type="radio" name="device" value="Smartphone" required>
+            <div class="device-card-inner">
+              <span class="device-icon">📱</span>
+              <span class="device-name">Smartphone</span>
+            </div>
+          </label>
+          <label class="device-card">
+            <input type="radio" name="device" value="Laptop">
+            <div class="device-card-inner">
+              <span class="device-icon">💻</span>
+              <span class="device-name">Laptop</span>
+            </div>
+          </label>
+          <label class="device-card">
+            <input type="radio" name="device" value="Desktop PC">
+            <div class="device-card-inner">
+              <span class="device-icon">🖥️</span>
+              <span class="device-name">Desktop PC</span>
+            </div>
+          </label>
+          <label class="device-card">
+            <input type="radio" name="device" value="Tablet">
+            <div class="device-card-inner">
+              <span class="device-icon">📟</span>
+              <span class="device-name">Tablet</span>
+            </div>
+          </label>
+          <label class="device-card">
+            <input type="radio" name="device" value="Smartwatch">
+            <div class="device-card-inner">
+              <span class="device-icon">⌚</span>
+              <span class="device-name">Smartwatch</span>
+            </div>
+          </label>
+          <label class="device-card">
+            <input type="radio" name="device" value="Gaming Console">
+            <div class="device-card-inner">
+              <span class="device-icon">🎮</span>
+              <span class="device-name">Console</span>
+            </div>
+          </label>
+          <label class="device-card">
+            <input type="radio" name="device" value="TV / Monitor">
+            <div class="device-card-inner">
+              <span class="device-icon">📺</span>
+              <span class="device-name">TV / Monitor</span>
+            </div>
+          </label>
+          <label class="device-card">
+            <input type="radio" name="device" value="Printer">
+            <div class="device-card-inner">
+              <span class="device-icon">🖨️</span>
+              <span class="device-name">Printer</span>
+            </div>
+          </label>
+          <label class="device-card">
+            <input type="radio" name="device" value="Camera">
+            <div class="device-card-inner">
+              <span class="device-icon">📷</span>
+              <span class="device-name">Camera</span>
+            </div>
+          </label>
+          <label class="device-card">
+            <input type="radio" name="device" value="Audio Device">
+            <div class="device-card-inner">
+              <span class="device-icon">🎧</span>
+              <span class="device-name">Audio</span>
+            </div>
+          </label>
+          <label class="device-card">
+            <input type="radio" name="device" value="Router / Modem">
+            <div class="device-card-inner">
+              <span class="device-icon">📡</span>
+              <span class="device-name">Router</span>
+            </div>
+          </label>
+          <label class="device-card">
+            <input type="radio" name="device" value="Other">
+            <div class="device-card-inner">
+              <span class="device-icon">🔧</span>
+              <span class="device-name">Other</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="section-divider"><span></span><em>Brand Selection</em><span></span></div>
+
+      <!-- STEP 2: BRAND -->
+      <div class="field-group">
+        <label>Select Brand <span>*</span></label>
+        <p class="brand-hint">Scroll to see all brands</p>
+        <div class="brand-grid">
+          <!-- Mobile / Multi-device -->
+          <label class="brand-card"><input type="radio" name="brand" value="Apple" required><div class="brand-card-inner">Apple</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Samsung"><div class="brand-card-inner">Samsung</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Xiaomi"><div class="brand-card-inner">Xiaomi</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="OPPO"><div class="brand-card-inner">OPPO</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Vivo"><div class="brand-card-inner">Vivo</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Huawei"><div class="brand-card-inner">Huawei</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="OnePlus"><div class="brand-card-inner">OnePlus</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Realme"><div class="brand-card-inner">Realme</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Nokia"><div class="brand-card-inner">Nokia</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Google"><div class="brand-card-inner">Google</div></label>
+          <!-- Laptop / PC -->
+          <label class="brand-card"><input type="radio" name="brand" value="Dell"><div class="brand-card-inner">Dell</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="HP"><div class="brand-card-inner">HP</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Lenovo"><div class="brand-card-inner">Lenovo</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="ASUS"><div class="brand-card-inner">ASUS</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Acer"><div class="brand-card-inner">Acer</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="MSI"><div class="brand-card-inner">MSI</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Razer"><div class="brand-card-inner">Razer</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Microsoft"><div class="brand-card-inner">Microsoft</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Toshiba"><div class="brand-card-inner">Toshiba</div></label>
+          <!-- Consoles -->
+          <label class="brand-card"><input type="radio" name="brand" value="Sony"><div class="brand-card-inner">Sony</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Nintendo"><div class="brand-card-inner">Nintendo</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Xbox"><div class="brand-card-inner">Xbox</div></label>
+          <!-- TV / Audio -->
+          <label class="brand-card"><input type="radio" name="brand" value="LG"><div class="brand-card-inner">LG</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Panasonic"><div class="brand-card-inner">Panasonic</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Sharp"><div class="brand-card-inner">Sharp</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="TCL"><div class="brand-card-inner">TCL</div></label>
+          <!-- Camera -->
+          <label class="brand-card"><input type="radio" name="brand" value="Canon"><div class="brand-card-inner">Canon</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Nikon"><div class="brand-card-inner">Nikon</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Fujifilm"><div class="brand-card-inner">Fujifilm</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="GoPro"><div class="brand-card-inner">GoPro</div></label>
+          <label class="brand-card"><input type="radio" name="brand" value="Other"><div class="brand-card-inner">Other</div></label>
+        </div>
+      </div>
+
+      <div class="section-divider"><span></span><em>Repair Details</em><span></span></div>
+
+      <!-- STEP 3: REPAIR DETAILS -->
+      <div class="field-group">
+        <label>Model / Version <span>*</span></label>
+        <input class="text-input" type="text" name="model" placeholder="e.g. iPhone 15 Pro, Galaxy S24, RTX 4090..." required />
+      </div>
+
+      <div class="field-group">
+        <label>Issue Description <span>*</span></label>
+        <textarea class="text-input" name="issue" placeholder="Describe the problem in detail: symptoms, when it started, error messages..." required></textarea>
+      </div>
+
+      <div class="field-group">
+        <label>Repair Priority <span>*</span></label>
+        <div class="priority-row">
+          <label class="priority-opt">
+            <input type="radio" name="priority" value="Standard" required>
+            <div class="priority-inner standard">Standard<br><span style="font-size:0.9em;opacity:0.7">3–5 days</span></div>
+          </label>
+          <label class="priority-opt">
+            <input type="radio" name="priority" value="Express">
+            <div class="priority-inner express">Express<br><span style="font-size:0.9em;opacity:0.7">1–2 days</span></div>
+          </label>
+          <label class="priority-opt">
+            <input type="radio" name="priority" value="Urgent">
+            <div class="priority-inner urgent">Urgent<br><span style="font-size:0.9em;opacity:0.7">Same day</span></div>
+          </label>
+        </div>
+      </div>
+
+      <div class="section-divider"><span></span><em>Contact & Schedule</em><span></span></div>
+
+      <!-- STEP 4: CONTACT & SCHEDULE -->
+      <div class="two-col">
+        <div class="field-group">
+          <label>Full Name <span>*</span></label>
+          <input class="text-input" type="text" name="name" placeholder="Your full name" required />
+        </div>
+        <div class="field-group">
+          <label>Contact Number <span>*</span></label>
+          <input class="text-input" type="tel" name="phone" placeholder="+63 9XX XXX XXXX" required />
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="field-group">
+          <label>Email Address</label>
+          <input class="text-input" type="email" name="email" placeholder="your@email.com" />
+        </div>
+        <div class="field-group">
+          <label>Preferred Date <span>*</span></label>
+          <input class="text-input" type="date" name="date" required />
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Preferred Time Slot</label>
+        <select class="text-input" name="time" style="cursor:pointer; appearance:none;">
+          <option value="" disabled selected>— Select a time slot —</option>
+          <option value="08:00–10:00">08:00 – 10:00 AM</option>
+          <option value="10:00–12:00">10:00 AM – 12:00 PM</option>
+          <option value="12:00–14:00">12:00 – 02:00 PM</option>
+          <option value="14:00–16:00">02:00 – 04:00 PM</option>
+          <option value="16:00–18:00">04:00 – 06:00 PM</option>
+        </select>
+      </div>
+
+      <!-- SUBMIT -->
+      <button type="submit" class="submit-btn">
+        ▶ &nbsp; CONFIRM BOOKING &nbsp; ▶
+      </button>
+
+    </div>
+  </form>
+</main>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-icon">✅</div>
+  <div class="success-title">BOOKING CONFIRMED</div>
+  <div class="success-code" id="successCode">REF# TF-000000</div>
+  <p class="success-sub">Your repair appointment has been logged. We'll contact you shortly to confirm the schedule.</p>
+  <button class="new-booking-btn" onclick="resetForm()">+ NEW BOOKING</button>
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="status-dot"></div>
+  <span class="ticker-text">
+    SYSTEM ONLINE &nbsp;·&nbsp; ACCEPTING BOOKINGS &nbsp;·&nbsp; EST. 2020 &nbsp;·&nbsp;
+    SMARTPHONES · LAPTOPS · DESKTOPS · TABLETS · CONSOLES · CAMERAS &nbsp;·&nbsp;
+    CERTIFIED TECHNICIANS · GENUINE PARTS · WARRANTY GUARANTEED &nbsp;·&nbsp;
+    SYSTEM ONLINE &nbsp;·&nbsp; ACCEPTING BOOKINGS &nbsp;·&nbsp; EST. 2020 &nbsp;·&nbsp;
+    SMARTPHONES · LAPTOPS · DESKTOPS · TABLETS · CONSOLES · CAMERAS &nbsp;·&nbsp;
+    CERTIFIED TECHNICIANS · GENUINE PARTS · WARRANTY GUARANTEED &nbsp;·&nbsp;
+  </span>
+</div>
+
+<script>
+  // Generate particles
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.bottom = Math.random() * 20 + 'vh';
+    p.style.setProperty('--dur', (6 + Math.random() * 10) + 's');
+    p.style.setProperty('--delay', (Math.random() * 8) + 's');
+    container.appendChild(p);
+  }
+
+  // Form submit
+  function submitForm(e) {
+    e.preventDefault();
+    const ref = 'TF-' + Math.floor(100000 + Math.random() * 900000);
+    document.getElementById('successCode').textContent = 'REF# ' + ref;
+    document.getElementById('successOverlay').classList.add('show');
+  }
+
+  function resetForm() {
+    document.getElementById('bookingForm').reset();
+    document.getElementById('successOverlay').classList.remove('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Set min date to today
+  const dateInput = document.querySelector('input[name="date"]');
+  const today = new Date().toISOString().split('T')[0];
+  dateInput.setAttribute('min', today);
+</script>
+</body>
+</html>
